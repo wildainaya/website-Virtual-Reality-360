@@ -1,0 +1,114 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Mangunrahe - Kamar Tipe 1</title>
+    <meta name="description" content="WebVR - Aframe - VR Myra Jihan 1">
+    <meta name="author" content="Kurnia Prima Putra - VR Designer">
+    <script src="style.css"></script>
+    <!-- <script src="script/aframe.min.js"></script> -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script>
+
+       // Komponen untuk membuat elemen selalu menghadap kamera
+    AFRAME.registerComponent('look-at', {
+      schema: { type: 'selector' },
+      tick: function () {
+        if (this.data && this.data.object3D) {
+          this.el.object3D.lookAt(this.data.object3D.position);
+        }
+      }
+    });
+
+    // Komponen untuk mengelola grup hotspot
+    AFRAME.registerComponent('hotspots', {
+      init: function () {
+        this.el.addEventListener('reloadspots', (evt) => {
+          // Sembunyikan grup hotspot lama
+          const oldGroup = document.getElementById(evt.detail.currspots);
+          if (oldGroup) oldGroup.setAttribute('scale', '0 0 0');
+
+          // Tampilkan grup hotspot baru
+          const newGroup = document.getElementById(evt.detail.newspots);
+          if (newGroup) newGroup.setAttribute('scale', '1 1 1');
+        });
+      }
+    });
+
+    // Komponen untuk setiap hotspot
+    AFRAME.registerComponent('spot', {
+      schema: {
+        linkto: { type: 'string' },
+        spotgroup: { type: 'string' }
+      },
+      init: function () {
+        this.el.setAttribute('look-at', '#cam');
+        this.el.addEventListener('click', () => {
+          // Ganti gambar skybox
+          const skybox = document.getElementById('skybox');
+          skybox.setAttribute('src', this.data.linkto);
+
+          // Emit event untuk mengganti grup hotspot
+          const hotspots = document.getElementById('spots');
+          hotspots.emit('reloadspots', {
+            newspots: this.data.spotgroup,
+            currspots: this.el.parentElement.id
+          });
+        });
+      }
+    });
+	</script>
+	</head>
+	<body>
+	
+    <a-scene background="color: #FFFFFF" cursor="rayOrigin: mouse">
+      <a-assets>
+       <img id="point1" src="images/Mangunrahe/1.webp"/> 
+       <img id="point2" src="images/Mangunrahe/2.webp"/> 
+       <img id="point3" src="images/Mangunrahe/3.webp"/> 
+       <img id="point4" src="images/Mangunrahe/halaman_depan.webp"/> 
+       <img id="point5" src="images/Mangunrahe/tangga.insp"/> 
+       <img id="point6" src="images/Mangunrahe/teras.insp"/> 
+
+        
+        <img id="hotspot" src="images/hotspots.png" />
+      </a-assets>
+      
+      <a-entity id="spots" hotspots>
+        <a-box id="group-point1"  scale="1 1 1">
+          <a-image spot="linkto:#point4;spotgroup:group-point4"  scale="0.1 0.1 1" position="-1 0 -0.2" transparent="true" src="#hotspot" look-at="#cam"></a-image>
+          <a-image spot="linkto:#point3;spotgroup:group-point3"  scale="0.5 0.5 1" position="3 0 -1" transparent="true" src="#hotspot" look-at="#cam"></a-image>
+        </a-box>
+        <a-entity id="group-point2" scale="0 0 -1">
+          <a-image spot="linkto:#point1;spotgroup:group-point1" scale="0.3 0.3" position="1 0 -2" transparent="true" src="#hotspot" look-at="#cam"></a-image>
+          <!-- <a-image spot="linkto:#point3;spotgroup:group-point3" position="0 -20 -3" width="8" height="8" transparent="true" src="#hotspot" look-at="#cam"></a-image> -->
+        </a-entity>
+        <a-entity id="group-point3" scale="0 0 -2">
+          <a-image spot="linkto:#point2;spotgroup:group-point2" width="0.53" height="0.53" position="1.3 -1.7 -4" transparent="true" src="#hotspot" look-at="#cam"></a-image>
+        </a-entity>
+        <a-entity id="group-point4" scale="0 0 -3">
+          <a-image spot="linkto:#point5;spotgroup:group-point5" scale="0.3 0.3 0.3" position="0.1 -1 -5" transparent="true" src="#hotspot" look-at="#cam"></a-image>
+        </a-entity>
+        <a-entity id="group-point5" scale="0 0 -4">
+          <a-image spot="linkto:#point6;spotgroup:group-point6" position="0.1 -1 -6" transparent="true" src="#hotspot" look-at="#cam"></a-image>
+        </a-entity>
+        <a-entity id="group-point6" scale="0 0 -5">
+          <a-image spot="linkto:#point1;spotgroup:group-point1" position="-0.8 0 -7" transparent="true" src="#hotspot" look-at="#cam"></a-image>
+        </a-entity>
+      </a-entity>
+      
+      <a-sky id="skybox" src="#point1" rotation="0 -45 0"></a-sky>
+      
+      <a-entity id="cam" camera position="0 0 0" look-controls="reverseMouseDrag:true">
+        <!-- <a-entity cursor="fuse:true;fuseTimeout:1000"
+                  geometry="primitive:ring;radiusInner:0.01;radiusOuter:0.02"
+                  position="0 0 -1.8"
+                  material="shader:flat;color:#0000ff"
+                  animation__mouseenter="property:scale;to:3 3 3;startEvents:mouseenter;endEvents:mouseleave;dir:reverse;dur:2000;loop:1">
+        </a-entity> -->
+      </a-entity>
+      
+    </a-scene>
+  </body>
+	
+	
+</html>
